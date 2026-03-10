@@ -1,0 +1,792 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MY NET // VIP PROBE v2 (ADV)</title>
+  <style>
+    :root{
+      --bg:#050814; --panel:#0a1026; --line:#18224a;
+      --txt:#d9e2ff; --muted:#8ea1ff;
+      --red1:#ff2a2a; --red2:#ff0066;
+      --org1:#ffb000; --org2:#ff6a00;
+      --grn1:#00ff88; --grn2:#00c2ff;
+      --blu1:#4d7cff; --blu2:#8ea1ff;
+      --glow:0 0 24px rgba(77,124,255,.22);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; padding:22px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      background:
+        radial-gradient(1200px 600px at 20% -10%, rgba(77,124,255,.22), transparent 60%),
+        radial-gradient(900px 500px at 90% 0%, rgba(0,255,136,.10), transparent 55%),
+        radial-gradient(800px 600px at 40% 110%, rgba(255,0,102,.12), transparent 55%),
+        linear-gradient(180deg, #030513, #050814 40%, #030513);
+      color:var(--txt);
+    }
+    .wrap{max-width:1120px;margin:0 auto}
+    .top{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:14px}
+    .brand{display:flex;gap:10px;align-items:center}
+    .dot{
+      width:12px;height:12px;border-radius:99px;
+      background:linear-gradient(90deg,var(--grn1),var(--grn2));
+      box-shadow:0 0 18px rgba(0,255,136,.45);
+      animation:pulse 1.6s infinite ease-in-out;
+    }
+    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.35)}}
+    .title{font-size:16px;letter-spacing:.6px}
+    .sub{font-size:12px;color:var(--muted);opacity:.9}
+    .panel{
+      background:rgba(10,16,38,.72);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:14px;
+      box-shadow: var(--glow);
+      backdrop-filter: blur(6px);
+    }
+    .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    button, input, select{
+      border-radius:12px; border:1px solid var(--line);
+      background:#070c1e; color:var(--txt);
+      padding:12px 12px; outline:none;
+      font:inherit;
+    }
+    select{padding:12px 10px}
+    button{
+      cursor:pointer;
+      background:linear-gradient(90deg, rgba(77,124,255,.35), rgba(0,255,136,.18));
+      transition: transform .15s ease, filter .15s ease;
+    }
+    button:hover{transform: translateY(-1px); filter:brightness(1.06)}
+    button:active{transform: translateY(0px); filter:brightness(0.98)}
+    button:disabled{opacity:.55;cursor:not-allowed}
+    .dangerBtn{background:linear-gradient(90deg, rgba(255,0,102,.28), rgba(255,176,0,.12));}
+    .badge{
+      padding:8px 10px; border:1px solid var(--line);
+      border-radius:999px; font-size:12px; color:var(--muted);
+      background:rgba(7,12,30,.7);
+    }
+
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+    @media(max-width:920px){.grid2{grid-template-columns:1fr}}
+
+    .meterHead{display:flex;justify-content:space-between;align-items:flex-end;gap:10px;flex-wrap:wrap}
+    .big{font-size:26px; letter-spacing:.6px}
+    .status{font-size:12px;color:var(--muted)}
+    .barOuter{
+      margin-top:10px;height:18px;border-radius:999px;border:1px solid var(--line);
+      background:linear-gradient(180deg,#060a1b,#070c1e);
+      overflow:hidden;position:relative;
+    }
+    .barFill{
+      height:100%;width:0%;border-radius:999px;
+      background:linear-gradient(90deg,var(--red1),var(--red2));
+      box-shadow:0 0 18px rgba(255,0,102,.22);
+      transition: width .18s ease;
+    }
+    .needle{
+      position:absolute; top:-10px;width:3px;height:38px;border-radius:99px;
+      left:0%;background:rgba(217,226,255,.9);
+      box-shadow:0 0 18px rgba(217,226,255,.35);
+      transform: translateX(0px);
+      transition: transform .18s ease;
+    }
+    .ticks{display:flex;justify-content:space-between;font-size:11px;color:rgba(142,161,255,.8);margin-top:6px}
+    .miniNote{font-size:11px;color:rgba(142,161,255,.82);margin-top:6px}
+
+    .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:12px}
+    @media(max-width:920px){.stats{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:560px){.stats{grid-template-columns:1fr}}
+    .card{
+      background:rgba(7,12,30,.7);
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+      min-height:72px;
+    }
+    .lbl{font-size:11px;color:var(--muted)}
+    .val{font-size:18px;margin-top:6px}
+
+    .grid3{display:grid;grid-template-columns:1.2fr .8fr;gap:12px;margin-top:12px}
+    @media(max-width:920px){.grid3{grid-template-columns:1fr}}
+    .log{
+      margin-top:12px;font-size:12px;color:rgba(217,226,255,.82);line-height:1.45;
+      white-space:pre-wrap;border-top:1px dashed rgba(24,34,74,.7);padding-top:10px;
+          max-height: 250px;
+    overflow-y: scroll;
+    }
+    .hint{font-size:11px;color:rgba(142,161,255,.85);margin-top:10px;line-height:1.4}
+    .divider{height:1px;background:rgba(24,34,74,.65);margin:12px 0}
+    .chartWrap{padding:10px}
+    canvas{width:100%;height:220px;display:block;border-radius:14px;border:1px solid var(--line);background:rgba(7,12,30,.55)}
+    .small{font-size:11px;color:rgba(142,161,255,.85)}
+    .settings{
+      display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px
+    }
+    @media(max-width:920px){.settings{grid-template-columns:1fr}}
+    .settingItem{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .settingItem label{font-size:11px;color:var(--muted)}
+    .settingItem input{width:120px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">
+        <div class="dot"></div>
+        <div>
+          <div class="title">MY INTERNET SPEED // VIP DARK PROBE v2 (ADV)</div>
+          <div class="sub">Download + Upload • Real Ping/Jitter • History • Export</div>
+        </div>
+      </div>
+      <div class="row">
+        <span class="badge" id="connBadge">Connection: —</span>
+        <span class="badge" id="timeBadge">—</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="row">
+        <button id="start">Start Auto</button>
+        <button id="once">Run Once</button>
+        <button id="stop" class="dangerBtn" disabled>Stop</button>
+        <span class="badge" id="mode">Mode: Idle</span>
+        <span class="badge" id="cycle">Cycle: —</span>
+        <button id="export" disabled>Export JSON</button>
+        <button id="clear" class="dangerBtn">Clear History</button>
+      </div>
+
+      <div class="settings">
+        <div class="settingItem">
+          <label for="interval">Auto interval (sec)</label>
+          <input id="interval" type="number" min="6" max="60" step="1" value="10">
+          <span class="small">(6–60)</span>
+        </div>
+        <div class="settingItem">
+          <label for="pingCount">Ping samples</label>
+          <input id="pingCount" type="number" min="5" max="30" step="1" value="12">
+          <span class="small">(median + p95)</span>
+        </div>
+        <div class="settingItem">
+          <label for="scale">Speed scale (Mbps)</label>
+          <select id="scale">
+            <option value="50">0–50</option>
+            <option value="100" selected>0–100</option>
+            <option value="200">0–200</option>
+            <option value="500">0–500</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid2">
+
+        <!-- DOWNLOAD METER -->
+        <div>
+          <div class="meterHead">
+            <div class="big" id="dlText">— Mbps</div>
+            <div class="status" id="dlStatus">Download gauge</div>
+          </div>
+          <div class="barOuter" id="dlOuter">
+            <div class="barFill" id="dlFill"></div>
+            <div class="needle" id="dlNeedle"></div>
+          </div>
+          <div class="ticks" id="dlTicks"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+          <div class="miniNote">Download (Cloudflare) — smoother needle</div>
+        </div>
+
+        <!-- UPLOAD METER -->
+        <div>
+          <div class="meterHead">
+            <div class="big" id="ulText">— Mbps</div>
+            <div class="status" id="ulStatus">Upload gauge</div>
+          </div>
+          <div class="barOuter" id="ulOuter">
+            <div class="barFill" id="ulFill"></div>
+            <div class="needle" id="ulNeedle"></div>
+          </div>
+          <div class="ticks" id="ulTicks"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+          <div class="miniNote">Upload (Cloudflare) — browser-limited sometimes</div>
+        </div>
+
+      </div>
+
+      <div class="stats">
+        <div class="card">
+          <div class="lbl">Latency (median)</div>
+          <div class="val" id="lat">—</div>
+        </div>
+        <div class="card">
+          <div class="lbl">Latency (p95)</div>
+          <div class="val" id="p95">—</div>
+        </div>
+        <div class="card">
+          <div class="lbl">Jitter (ms)</div>
+          <div class="val" id="jit">—</div>
+        </div>
+        <div class="card">
+          <div class="lbl">Score / Grade</div>
+          <div class="val" id="grade">—</div>
+        </div>
+        <div class="card">
+          <div class="lbl">Stability</div>
+          <div class="val" id="stab">—</div>
+        </div>
+      </div>
+
+      <div class="grid3">
+        <div class="chartWrap">
+          <div class="row" style="justify-content:space-between;margin-bottom:8px;">
+            <span class="badge">History (last 30 cycles)</span>
+            <span class="small" id="chartNote">DL/UL Mbps + Lat ms</span>
+          </div>
+          <canvas id="chart" width="980" height="220"></canvas>
+          <div class="hint">Tip: LAN vs Wi-Fi vs Hotspot compare karein. Agar DL ok ho lekin p95/jitter high ho to “feel slow” hota hai.</div>
+        </div>
+        <div>
+          <span class="badge">Live Log</span>
+          <div class="log" id="log"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+
+  // Buttons
+  const startBtn = $("start");
+  const onceBtn  = $("once");
+  const stopBtn  = $("stop");
+  const exportBtn= $("export");
+  const clearBtn = $("clear");
+
+  // UI
+  const connBadge = $("connBadge");
+  const timeBadge = $("timeBadge");
+  const modeBadge = $("mode");
+  const cycleBadge = $("cycle");
+
+  // Settings
+  const intervalEl = $("interval");
+  const pingCountEl = $("pingCount");
+  const scaleEl = $("scale");
+
+  // Download meter
+  const dlText = $("dlText");
+  const dlStatus = $("dlStatus");
+  const dlFill = $("dlFill");
+  const dlNeedle = $("dlNeedle");
+  const dlOuter = $("dlOuter");
+  const dlTicks = $("dlTicks");
+
+  // Upload meter
+  const ulText = $("ulText");
+  const ulStatus = $("ulStatus");
+  const ulFill = $("ulFill");
+  const ulNeedle = $("ulNeedle");
+  const ulOuter = $("ulOuter");
+  const ulTicks = $("ulTicks");
+
+  // Stats
+  const latEl = $("lat");
+  const p95El = $("p95");
+  const jitEl = $("jit");
+  const gradeEl = $("grade");
+  const stabEl = $("stab");
+  const logEl = $("log");
+
+  // Chart
+  const canvas = $("chart");
+  const ctx = canvas.getContext("2d");
+  const chartNote = $("chartNote");
+
+  // Endpoints (Cloudflare)
+  // ping: trace endpoint (works with no-cors timing)
+  const PING_URL = "https://www.cloudflare.com/cdn-cgi/trace";
+  // download / upload endpoints
+  const DL_URL = (bytes) => `https://speed.cloudflare.com/__down?bytes=${bytes}&cb=${Date.now()}`;
+  const UL_URL = (bytes) => `https://speed.cloudflare.com/__up?bytes=${bytes}&cb=${Date.now()}`;
+
+  // State
+  let running = false;
+  let timer = null;
+  let cycle = 0;
+  let aborter = null;
+
+  // Smooth targets
+  let dlTargetPct = 0, dlPct = 0;
+  let ulTargetPct = 0, ulPct = 0;
+  let rafId = null;
+
+  // History
+  const history = []; // {ts, dl, ul, lat, p95, jit, score, grade}
+  const HISTORY_MAX = 30;
+
+  // Utils
+  const clamp = (n,a,b)=>Math.max(a,Math.min(b,n));
+  const nowStr = ()=> new Date().toLocaleString();
+  const sleep = (ms)=> new Promise(r=>setTimeout(r,ms));
+
+  function setBarColor(fillEl, mode){
+    if (mode === "red"){
+      fillEl.style.background = "linear-gradient(90deg, var(--red1), var(--red2))";
+      fillEl.style.boxShadow  = "0 0 18px rgba(255,0,102,.22)";
+    } else if (mode === "org"){
+      fillEl.style.background = "linear-gradient(90deg, var(--org1), var(--org2))";
+      fillEl.style.boxShadow  = "0 0 18px rgba(255,106,0,.20)";
+    } else {
+      fillEl.style.background = "linear-gradient(90deg, var(--grn1), var(--grn2))";
+      fillEl.style.boxShadow  = "0 0 18px rgba(0,255,136,.18)";
+    }
+  }
+
+  function updateTicks(){
+    const scale = Number(scaleEl.value || 100);
+    const t = [0, 0.25, 0.5, 0.75, 1].map(x => Math.round(scale*x));
+    dlTicks.innerHTML = t.map(v=>`<span>${v}</span>`).join("");
+    ulTicks.innerHTML = t.map(v=>`<span>${v}</span>`).join("");
+  }
+
+  function mbpsToPct(mbps){
+    const scale = Number(scaleEl.value || 100);
+    return clamp((mbps/scale)*100, 0, 100);
+  }
+
+  function setDlVisual(mbps){
+    dlTargetPct = mbpsToPct(mbps);
+    if (mbps < 10) setBarColor(dlFill, "red");
+    else if (mbps < 25) setBarColor(dlFill, "org");
+    else setBarColor(dlFill, "grn");
+  }
+
+  function setUlVisual(mbps){
+    ulTargetPct = mbpsToPct(mbps);
+    if (mbps < 5) setBarColor(ulFill, "red");
+    else if (mbps < 15) setBarColor(ulFill, "org");
+    else setBarColor(ulFill, "grn");
+  }
+
+  function startAnimator(){
+    if (rafId) return;
+    const step = () => {
+      dlPct += (dlTargetPct - dlPct) * 0.18;
+      ulPct += (ulTargetPct - ulPct) * 0.18;
+
+      dlFill.style.width = dlPct.toFixed(2) + "%";
+      ulFill.style.width = ulPct.toFixed(2) + "%";
+
+      const dlW = dlOuter.clientWidth;
+      const ulW = ulOuter.clientWidth;
+
+      dlNeedle.style.transform = `translateX(${(dlW * (dlPct/100)).toFixed(1)}px)`;
+      ulNeedle.style.transform = `translateX(${(ulW * (ulPct/100)).toFixed(1)}px)`;
+
+      rafId = requestAnimationFrame(step);
+    };
+    rafId = requestAnimationFrame(step);
+  }
+
+  function stopAnimator(){
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = null;
+  }
+
+  function percentile(sortedArr, p){
+    if (!sortedArr.length) return NaN;
+    const idx = (sortedArr.length - 1) * p;
+    const lo = Math.floor(idx);
+    const hi = Math.ceil(idx);
+    if (lo === hi) return sortedArr[lo];
+    const w = idx - lo;
+    return sortedArr[lo] * (1-w) + sortedArr[hi] * w;
+  }
+
+  async function pingTest(count, signal){
+    const times = [];
+    let fails = 0;
+
+    for (let i=0;i<count;i++){
+      const u = `${PING_URL}?cb=${Date.now()}_${i}`;
+      const t0 = performance.now();
+      try{
+        await fetch(u, { method:"GET", mode:"no-cors", cache:"no-store", signal });
+      }catch(e){
+        if (e && e.name === "AbortError") throw e;
+        fails++;
+        // push a penalty time so p95 reflects instability
+        times.push(450);
+        await sleep(90);
+        continue;
+      }
+      const t1 = performance.now();
+      times.push(t1 - t0);
+      await sleep(90);
+    }
+
+    const sorted = [...times].sort((a,b)=>a-b);
+    const med = percentile(sorted, 0.50);
+    const p95 = percentile(sorted, 0.95);
+    const jitter = (Math.max(...times) - Math.min(...times));
+    return { med, p95, jitter, samples: times, fails };
+  }
+
+  async function downloadMbps(signal){
+    // Adaptive size (fast net -> bigger chunk)
+    const hint = (navigator.connection && navigator.connection.downlink) ? navigator.connection.downlink : 0;
+    const bytes = hint && hint < 10 ? 8_000_000 : (hint && hint < 50 ? 20_000_000 : 40_000_000);
+
+    const u = DL_URL(bytes);
+    const t0 = performance.now();
+    const res = await fetch(u, { cache:"no-store", mode:"cors", signal });
+
+    let got = 0;
+    if (res.body && res.body.getReader){
+      const reader = res.body.getReader();
+      while(true){
+        const {done, value} = await reader.read();
+        if(done) break;
+        if(value) got += value.byteLength;
+      }
+    } else {
+      const blob = await res.blob();
+      got = blob.size;
+    }
+
+    const t1 = performance.now();
+    const sec = (t1 - t0)/1000;
+    const mbps = ((got / Math.max(0.001, sec)) * 8) / 1e6;
+    return { mbps, bytes: got, sec, endpoint: "Cloudflare __down" };
+  }
+
+  async function uploadMbps(signal){
+    // upload test can be limited by browser / CORS / ISP policies
+    const hint = (navigator.connection && navigator.connection.downlink) ? navigator.connection.downlink : 0;
+    const bytes = hint && hint < 10 ? 2_000_000 : (hint && hint < 50 ? 6_000_000 : 10_000_000);
+
+    // Create random-ish payload
+    const payload = new Uint8Array(bytes);
+    crypto.getRandomValues(payload);
+
+    const u = UL_URL(bytes);
+    const t0 = performance.now();
+    // Cloudflare expects POST
+    await fetch(u, { method:"POST", body: payload, cache:"no-store", mode:"cors", signal });
+    const t1 = performance.now();
+
+    const sec = (t1 - t0)/1000;
+    const mbps = ((bytes / Math.max(0.001, sec)) * 8) / 1e6;
+    return { mbps, bytes, sec, endpoint: "Cloudflare __up" };
+  }
+
+  function scoreAndGrade(dl, ul, latMed, latP95, jit, fails){
+    // Score 0..100 (heuristic)
+    // DL weight + UL + latency + jitter + fails penalty
+    const dlScore = clamp((dl/80)*45, 0, 45);
+    const ulScore = clamp((ul/30)*20, 0, 20);
+
+    const latPenalty = clamp((latMed/6) + (latP95/10), 0, 40);  // bigger => worse
+    const jitPenalty = clamp(jit/3.5, 0, 20);
+    const failPenalty = clamp(fails * 6, 0, 30);
+
+    let score = (dlScore + ulScore) - (latPenalty*0.55 + jitPenalty*0.55 + failPenalty*0.8);
+    score = clamp(score + 35, 0, 100);
+
+    let grade = "D";
+    if (score >= 90) grade = "A+";
+    else if (score >= 80) grade = "A";
+    else if (score >= 70) grade = "B";
+    else if (score >= 60) grade = "C";
+    else grade = "D";
+
+    // Stability label
+    let stability = "GOOD";
+    if (fails >= 2 || latP95 > 250 || jit > 60) stability = "POOR";
+    else if (latP95 > 170 || jit > 35) stability = "OK";
+
+    return { score, grade, stability };
+  }
+
+  function pushHistory(row){
+    history.push(row);
+    while(history.length > HISTORY_MAX) history.shift();
+    exportBtn.disabled = history.length === 0;
+  }
+
+  function drawChart(){
+    const w = canvas.width, h = canvas.height;
+    ctx.clearRect(0,0,w,h);
+
+    // grid
+    ctx.globalAlpha = 1;
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = "rgba(142,161,255,.18)";
+    for (let i=0;i<=5;i++){
+      const y = Math.round((h-18) * (i/5)) + 6;
+      ctx.beginPath(); ctx.moveTo(6,y); ctx.lineTo(w-6,y); ctx.stroke();
+    }
+
+    if (!history.length){
+      ctx.fillStyle = "rgba(142,161,255,.8)";
+      ctx.font = "12px ui-monospace, Menlo, Consolas";
+      ctx.fillText("No data yet — run a test.", 14, 24);
+      return;
+    }
+
+    const scale = Number(scaleEl.value || 100);
+    const maxLat = 350;
+
+    const padL = 10, padR = 10, padT = 10, padB = 16;
+    const plotW = w - padL - padR;
+    const plotH = h - padT - padB;
+
+    const n = history.length;
+    const xAt = (i)=> padL + (plotW * (n===1 ? 0 : i/(n-1)));
+
+    // Helper: map Mbps (0..scale) -> y
+    const yMbps = (v)=> padT + plotH - (clamp(v,0,scale)/scale)*plotH;
+    const yLat  = (v)=> padT + plotH - (clamp(v,0,maxLat)/maxLat)*plotH;
+
+    // Lines: DL (bright), UL (soft), Lat (dotted-like)
+    // DL
+    ctx.strokeStyle = "rgba(0,255,136,.85)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    history.forEach((r,i)=>{
+      const x = xAt(i), y = yMbps(r.dl);
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+
+    // UL
+    ctx.strokeStyle = "rgba(0,194,255,.75)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    history.forEach((r,i)=>{
+      const x = xAt(i), y = yMbps(r.ul);
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+
+    // Lat median
+    ctx.strokeStyle = "rgba(255,176,0,.70)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    history.forEach((r,i)=>{
+      const x = xAt(i), y = yLat(r.lat);
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+
+    // labels
+    const last = history[history.length-1];
+    chartNote.textContent = `Last: DL ${last.dl.toFixed(1)} • UL ${last.ul.toFixed(1)} Mbps | Lat ${last.lat.toFixed(0)} ms`;
+  }
+
+  function updateConnBadge(){
+    const c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (c){
+      const down = c.downlink ? `${c.downlink} Mbps` : "—";
+      const rtt  = c.rtt ? `${c.rtt} ms` : "—";
+      connBadge.textContent = `Connection: ${c.effectiveType || "—"} | downlink: ${down} | rtt: ${rtt}`;
+    } else {
+      connBadge.textContent = "Connection: (browser not exposing network hints)";
+    }
+  }
+
+  function log(msg){
+    logEl.textContent = `[${new Date().toLocaleTimeString()}] ${msg}\n` + (logEl.textContent || "");
+  }
+
+  async function runOnce(){
+    cycle++;
+    cycleBadge.textContent = `Cycle: ${cycle}`;
+    timeBadge.textContent = nowStr();
+    modeBadge.textContent = running ? "Mode: Auto" : "Mode: Manual";
+
+    const pingCount = clamp(Number(pingCountEl.value || 12), 5, 30);
+
+    aborter = new AbortController();
+    const { signal } = aborter;
+
+    dlStatus.textContent = "Testing…";
+    ulStatus.textContent = "Testing…";
+    log(`Starting cycle ${cycle} (ping=${pingCount})`);
+
+    // 1) ping
+    let p;
+    try{
+      p = await pingTest(pingCount, signal);
+    }catch(e){
+      if (e && e.name === "AbortError") return;
+      p = { med: NaN, p95: NaN, jitter: NaN, samples: [], fails: pingCount };
+    }
+
+    const latMed = p.med;
+    const latP95 = p.p95;
+    const jitter = p.jitter;
+    const fails = p.fails;
+
+    latEl.textContent = Number.isFinite(latMed) ? `${latMed.toFixed(0)} ms` : "—";
+    p95El.textContent = Number.isFinite(latP95) ? `${latP95.toFixed(0)} ms` : "—";
+    jitEl.textContent = Number.isFinite(jitter) ? `${jitter.toFixed(0)} ms` : "—";
+
+    log(`Ping median=${latMed.toFixed(0)}ms p95=${latP95.toFixed(0)}ms jitter=${jitter.toFixed(0)}ms fails=${fails}`);
+
+    // 2) download
+    let dl = 0, dlMeta = null;
+    try{
+      dlMeta = await downloadMbps(signal);
+      dl = dlMeta.mbps;
+      dlStatus.textContent = dl >= 25 ? "Download good ✅" : (dl >= 10 ? "Download ok ⚠️" : "Download low ❌");
+      log(`DL: ${(dlMeta.bytes/1e6).toFixed(1)}MB in ${dlMeta.sec.toFixed(2)}s => ${dl.toFixed(1)} Mbps`);
+    }catch(e){
+      if (e && e.name === "AbortError") return;
+      dlStatus.textContent = "Download blocked/failed.";
+      log(`DL failed: ${String(e)}`);
+      dl = 0;
+    }
+
+    // 3) upload
+    let ul = 0, ulMeta = null;
+    try{
+      ulMeta = await uploadMbps(signal);
+      ul = ulMeta.mbps;
+      ulStatus.textContent = ul >= 15 ? "Upload good ✅" : (ul >= 5 ? "Upload ok ⚠️" : "Upload low ❌");
+      log(`UL: ${(ulMeta.bytes/1e6).toFixed(1)}MB in ${ulMeta.sec.toFixed(2)}s => ${ul.toFixed(1)} Mbps`);
+    }catch(e){
+      if (e && e.name === "AbortError") return;
+      ulStatus.textContent = "Upload blocked/failed.";
+      log(`UL failed: ${String(e)}`);
+      ul = 0;
+    }
+
+    // visuals
+    dlText.textContent = `${dl.toFixed(1)} Mbps`;
+    ulText.textContent = `${ul.toFixed(1)} Mbps`;
+    setDlVisual(dl);
+    setUlVisual(ul);
+
+    // score
+    const latSafe = Number.isFinite(latMed) ? latMed : 300;
+    const p95Safe = Number.isFinite(latP95) ? latP95 : 450;
+    const jitSafe = Number.isFinite(jitter) ? jitter : 120;
+
+    const sg = scoreAndGrade(dl, ul, latSafe, p95Safe, jitSafe, fails);
+    gradeEl.textContent = `${Math.round(sg.score)} / ${sg.grade}`;
+    stabEl.textContent = sg.stability;
+
+    // push history + redraw chart
+    pushHistory({
+      ts: new Date().toISOString(),
+      dl, ul,
+      lat: latSafe,
+      p95: p95Safe,
+      jit: jitSafe,
+      fails,
+      score: sg.score,
+      grade: sg.grade,
+      stability: sg.stability
+    });
+
+    drawChart();
+  }
+
+  function startAuto(){
+    if (running) return;
+    running = true;
+    cycle = 0;
+
+    startBtn.disabled = true;
+    onceBtn.disabled = true;
+    stopBtn.disabled = false;
+
+    modeBadge.textContent = "Mode: Auto";
+    cycleBadge.textContent = "Cycle: 0";
+
+    const intervalSec = clamp(Number(intervalEl.value || 10), 6, 60);
+    log(`Auto started (interval=${intervalSec}s)`);
+
+    runOnce();
+    timer = setInterval(() => {
+      if (!running) return;
+      runOnce();
+    }, intervalSec * 1000);
+  }
+
+  function stopAll(){
+    running = false;
+    startBtn.disabled = false;
+    onceBtn.disabled = false;
+    stopBtn.disabled = true;
+
+    if (timer) clearInterval(timer);
+    timer = null;
+
+    if (aborter) aborter.abort();
+    aborter = null;
+
+    modeBadge.textContent = "Mode: Idle";
+    log(`Stopped.`);
+  }
+
+  function exportJSON(){
+    const blob = new Blob([JSON.stringify({
+      app: "VIP PROBE v2",
+      exportedAt: new Date().toISOString(),
+      scaleMbps: Number(scaleEl.value || 100),
+      history
+    }, null, 2)], {type:"application/json"});
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `vip-probe-history-${Date.now()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function clearHistory(){
+    history.length = 0;
+    exportBtn.disabled = true;
+    drawChart();
+    log("History cleared.");
+  }
+
+  // Event wiring
+  startBtn.addEventListener("click", startAuto);
+  onceBtn.addEventListener("click", () => { if (!running) runOnce(); });
+  stopBtn.addEventListener("click", stopAll);
+  exportBtn.addEventListener("click", exportJSON);
+  clearBtn.addEventListener("click", clearHistory);
+
+  scaleEl.addEventListener("change", () => {
+    updateTicks();
+    // re-apply visuals with last known values
+    const last = history[history.length-1];
+    if (last){
+      setDlVisual(last.dl);
+      setUlVisual(last.ul);
+      dlText.textContent = `${last.dl.toFixed(1)} Mbps`;
+      ulText.textContent = `${last.ul.toFixed(1)} Mbps`;
+    }
+    drawChart();
+  });
+
+  // init
+  updateConnBadge();
+  setInterval(updateConnBadge, 5000);
+  timeBadge.textContent = nowStr();
+
+  updateTicks();
+  setDlVisual(0); setUlVisual(0);
+  startAnimator();
+  drawChart();
+  log("Ready. Use Run Once or Start Auto.");
+})();
+</script>
+</body>
+</html>
